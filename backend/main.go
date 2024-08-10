@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -22,13 +23,66 @@ func main(){
 	initDB()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request){
+	mux.HandleFunc("GET /hello/", func(w http.ResponseWriter, r *http.Request){
 		fmt.Fprintf(w, "Hello World\n")
 	})
 
+	mux.HandleFunc("GET /workout/{date}",getWorkout)
+	mux.HandleFunc("GET /workout/",getWorkout)
 	mux.HandleFunc("PUT /workout",putWorkout)
 
 	http.ListenAndServe("0.0.0.0:8040", mux)
+}
+
+func getWorkout(w http.ResponseWriter, r *http.Request){
+	//TODO DB lookup
+	date := r.PathValue("date")
+	var datestamp int64
+	if date == "" {
+		datestamp = time.Now().Unix()
+	}
+	noonTime := validateDate(datestamp)
+
+	db, err := sql.Open("sqlite3","./data/workout.db")
+	if err != nil {
+		http.Error(w, "Error: Unable to open Database", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+	sql := `SELECT id, Date, Data FROM workouts where Date >= ? AND Date <= ?`
+	stmt, err := db.Prepare(sql)
+	if err != nil {
+		http.Error(w, "Error: Unable to prepare sql statement", http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(noonTime - 3600, noonTime + 3600)
+	fmt.Printf("SELECT id, Date, Data FROM workouts WHERE Date >= %s AND Date <= %s\n",
+		fmt.Sprint(noonTime-3600),fmt.Sprint(noonTime+3600))
+	if err != nil {
+		errText := "Error: Unable to retrieve rows for requested date"
+		http.Error(w, errText, http.StatusInternalServerError)
+		return
+	}
+	if !rows.Next() || rows.Err() != nil {
+		http.Error(w, "Error: Unable to retrieve row", http.StatusInternalServerError)
+		fmt.Println(rows.Err())
+		return
+	}
+
+	var workout Workout;
+	if err := rows.Scan(&workout.Id, &workout.Date, &workout.Data); err != nil {
+		http.Error(w, "Error reading row", http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+	defer rows.Close()
+
+	dataString := string(workout.Data.([]byte))
+	workout.Data = dataString
+	fmt.Fprintf(w, "%+v\n",workout)
+	fmt.Println(dataString)
 }
 
 func putWorkout(w http.ResponseWriter, r *http.Request){
@@ -39,6 +93,7 @@ func putWorkout(w http.ResponseWriter, r *http.Request){
 	if checkHTTPErr(err, w, r.RemoteAddr){
 		return
 	}
+	workout.Date = validateDate(workout.Date)
 	dataJSON, err := json.Marshal(workout.Data)
 
 	db, err := sql.Open("sqlite3","./data/workout.db")
@@ -106,4 +161,10 @@ func checkErr(err error){
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+func validateDate(date int64) int64 {
+	t := time.Unix(date, 0)
+	noonTime := time.Date(t.Year(), t.Month(), t.Day(), 12, 0, 0, 0, t.Location())
+	newTimeStamp := noonTime.Unix()
+	return newTimeStamp
 }
