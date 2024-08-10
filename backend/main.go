@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -16,10 +17,11 @@ type Workout struct {
 	Id	int
 	Date int64
 	//Data json.RawMessage `json:"data"`
-	Data interface{} `json:"data"`
+	Data interface{} `json:"Data"`
 }
 
 func main(){
+	fmt.Println("Initializing")
 	initDB()
 
 	mux := http.NewServeMux()
@@ -30,10 +32,29 @@ func main(){
 	mux.HandleFunc("GET /workout/{date}",getWorkout)
 	mux.HandleFunc("GET /workout/",getWorkout)
 	mux.HandleFunc("PUT /workout",putWorkout)
+	mux.HandleFunc("GET /timer",getTimer)
 
 	http.ListenAndServe("0.0.0.0:8040", mux)
 }
 
+
+func getTimer(w http.ResponseWriter, r *http.Request){
+	filePath := filepath.Clean("../frontend/timer.html")
+	file, err := os.Open(filePath)
+	if err != nil {
+		http.Error(w, "Error: File not Found",http.StatusNotFound)
+		return
+	}
+	defer file.Close()
+
+	fileInfo, err := os.Stat(filePath)
+	if err != nil {
+		http.Error(w, "Error: File not Found",http.StatusNotFound)
+		return
+	}
+
+	http.ServeContent(w, r, "timer.html", fileInfo.ModTime(), file)
+}
 func getWorkout(w http.ResponseWriter, r *http.Request){
 	//TODO DB lookup
 	date := r.PathValue("date")
@@ -81,7 +102,13 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 
 	dataString := string(workout.Data.([]byte))
 	workout.Data = dataString
-	fmt.Fprintf(w, "%+v\n",workout)
+	workoutOutput, err := json.Marshal(workout)
+	if err != nil {
+		http.Error(w, "Error: Unable to encode workout", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	fmt.Fprintf(w, "%s", string(workoutOutput))
 	fmt.Println(dataString)
 }
 
