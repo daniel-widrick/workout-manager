@@ -1,0 +1,8 @@
+services:
+  workout-manager:
+    build: ./
+    ports:
+      - "8040:8040"
+    volumes:
+      - ./backend/data:/app/backend/data
+    restart: always
