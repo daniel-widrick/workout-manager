@@ -31,7 +31,10 @@
 				</li>
 			</ol>
 			<div class="flex-grid">
-				<div class="col"><button @click="start">Start!</button></div>
+				<div class="col">
+					<button v-if="startEnabled" @click="start" :disabled="!startEnabled">Start!</button>
+					<h1>{{ statusMessage }}</h2>
+				</div>
 			</div>
 		</div>
 	</body>
