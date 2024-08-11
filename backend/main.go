@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -88,6 +89,14 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 	var datestamp int64
 	if date == "" {
 		datestamp = time.Now().Unix()
+	} else {
+		v, err := strconv.ParseInt(date,10,64)
+		if err != nil {
+			fmt.Println("Couldn't parse datestamp from url:",date,err)
+			datestamp = time.Now().Unix()
+		} else {
+			datestamp = v
+		}
 	}
 	noonTime := validateDate(datestamp)
 
