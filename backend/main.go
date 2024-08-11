@@ -17,7 +17,8 @@ type Workout struct {
 	Id	int
 	Date int64
 	//Data json.RawMessage `json:"data"`
-	Data interface{} `json:"Data"`
+	//Routine interface{} `json:"routine"`
+	Routine json.RawMessage `json:"routine"`
 }
 
 func main(){
@@ -33,13 +34,38 @@ func main(){
 	mux.HandleFunc("GET /workout/",getWorkout)
 	mux.HandleFunc("PUT /workout",putWorkout)
 	mux.HandleFunc("GET /timer",getTimer)
+	mux.HandleFunc("GET /timer.js",getTimer)
+	mux.HandleFunc("GET /timer.html",getTimer)
+	mux.HandleFunc("GET /timer.css",getTimer)
+	mux.HandleFunc("GET /timerFetch.js",getTimer)
+	mux.HandleFunc("GET /timerRun.js",getTimer)
 
 	http.ListenAndServe("0.0.0.0:8040", mux)
 }
 
 
 func getTimer(w http.ResponseWriter, r *http.Request){
-	filePath := filepath.Clean("../frontend/timer.html")
+	var requestFile = ""
+	var contentType = "text/html"
+
+	switch r.URL.Path {
+		case "/timer":
+			requestFile = "../frontend/timer.html"
+		case "/timer.js":
+			requestFile = "../frontend/timer.js"
+			contentType = "application/javascript"
+		case "/timer.css":
+			requestFile = "../frontend/timer.css"
+		case "/timerFetch.js":
+			requestFile = "../frontend/timerFetch.js"
+			contentType = "application/javascript"
+		case "/timerRun.js":
+			requestFile = "../frontend/timerRun.js"
+			contentType = "application/javascript"
+	}
+
+
+	filePath := filepath.Clean(requestFile)
 	file, err := os.Open(filePath)
 	if err != nil {
 		http.Error(w, "Error: File not Found",http.StatusNotFound)
@@ -53,6 +79,7 @@ func getTimer(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
+	w.Header().Set("Content-Type", contentType)
 	http.ServeContent(w, r, "timer.html", fileInfo.ModTime(), file)
 }
 func getWorkout(w http.ResponseWriter, r *http.Request){
@@ -93,15 +120,15 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 	}
 
 	var workout Workout;
-	if err := rows.Scan(&workout.Id, &workout.Date, &workout.Data); err != nil {
+	if err := rows.Scan(&workout.Id, &workout.Date, &workout.Routine); err != nil {
 		http.Error(w, "Error reading row", http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
 	defer rows.Close()
 
-	dataString := string(workout.Data.([]byte))
-	workout.Data = dataString
+	//dataString := string(workout.Routine.([]byte))
+	//workout.Routine = dataString
 	workoutOutput, err := json.Marshal(workout)
 	if err != nil {
 		http.Error(w, "Error: Unable to encode workout", http.StatusInternalServerError)
@@ -109,7 +136,7 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 	}
 	w.Header().Set("Content-Type","application/json")
 	fmt.Fprintf(w, "%s", string(workoutOutput))
-	fmt.Println(dataString)
+	fmt.Println(string(workoutOutput))
 }
 
 func putWorkout(w http.ResponseWriter, r *http.Request){
@@ -121,7 +148,7 @@ func putWorkout(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	workout.Date = validateDate(workout.Date)
-	dataJSON, err := json.Marshal(workout.Data)
+	dataJSON, err := json.Marshal(workout.Routine)
 
 	db, err := sql.Open("sqlite3","./data/workout.db")
 	defer db.Close()
