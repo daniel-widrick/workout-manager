@@ -5,8 +5,8 @@
 [
 	{ "type": "walk", "length": 3 },
 	{ "type": "interval", "repeat": 3, "routine": [
-		{"type": "walk", "length": 3},
-		{"type": "run", "length": 5}
+		{"type": "run", "length": 3},
+		{"type": "walk", "length": 5}
 	]},
 	{ "type": "walk", "length": 3 }
 ]
