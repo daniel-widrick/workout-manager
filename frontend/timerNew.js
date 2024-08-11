@@ -1,6 +1,7 @@
-import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+import { createApp, ref, onMounted, onUnmounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import { fetchWorkout } from '/timerFetch.js'
 import { processRoutine } from '/timerRun.js'
+
 
 createApp({
 	setup() {
@@ -14,13 +15,30 @@ createApp({
 			//processRoutine(workoutData.value)
 			isLoading.value = false
 		}
-		const start = async() => {
+		const start = async(event) => {
+			event.stopPropagation()
+			window.TimerRun=true
 			await processRoutine(workoutData.value)
 		}
+		const pauseToggle = async() => {
+			window.TimerRun=(!window.TimerRun)
+		}
 
+		//Fetch Workout Data
 		workoutFetch()
+
+		//Clicking on body toggles timer pause
+		onMounted(() => {
+			document.body.addEventListener('click',pauseToggle)
+		})
+		onUnmounted(() => {
+			document.body.removeEventListener('click',pauseToggle)
+		})
+
+		//export
 		return {
 			message, workoutData, isLoading, start
 		}
+		
 	}
 }).mount('#app')
