@@ -40,7 +40,7 @@
 							<li v-for="intervalSet in set.routine">
 								<div class="flex-grid">
 									<div class="col">{{ intervalSet.type }}</div>
-									<div class="col length">{{ intervalSet.repeat }}</div>
+									<div class="col length">{{ formatLength(intervalSet.length) }}</div>
 									<div class="col btn">
 										<button @click="removeIntervalSet(set,intervalSet)" class="del">
 											x

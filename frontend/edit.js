@@ -5,7 +5,7 @@ createApp({
 	setup(){
 		const workoutDate = ref(new Date())
 		const workoutData = ref([])
-		const workoutTypes = ref(['walk','run','interval'])
+		const workoutTypes = ref(['walk','fast walk','run','interval'])
 		const addWorkoutType = ref('walk')
 		const addWorkoutLength = ref(30)
 		const addIntervalType = ref('walk')
