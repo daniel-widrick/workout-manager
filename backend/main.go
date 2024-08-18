@@ -34,18 +34,20 @@ func main(){
 	mux.HandleFunc("GET /workout/{date}",getWorkout)
 	mux.HandleFunc("GET /workout/",getWorkout)
 	mux.HandleFunc("PUT /workout",putWorkout)
-	mux.HandleFunc("GET /timer",getTimer)
-	mux.HandleFunc("GET /timer.js",getTimer)
-	mux.HandleFunc("GET /timer.html",getTimer)
-	mux.HandleFunc("GET /timer.css",getTimer)
-	mux.HandleFunc("GET /timerFetch.js",getTimer)
-	mux.HandleFunc("GET /timerRun.js",getTimer)
+	mux.HandleFunc("GET /timer",getStatic)
+	mux.HandleFunc("GET /timer.js",getStatic)
+	mux.HandleFunc("GET /timer.html",getStatic)
+	mux.HandleFunc("GET /style.css",getStatic)
+	mux.HandleFunc("GET /common.js",getStatic)
+	mux.HandleFunc("GET /timerRun.js",getStatic)
+	mux.HandleFunc("GET /edit",getStatic)
+	mux.HandleFunc("GET /edit.js",getStatic)
 
 	http.ListenAndServe("0.0.0.0:8040", mux)
 }
 
 
-func getTimer(w http.ResponseWriter, r *http.Request){
+func getStatic(w http.ResponseWriter, r *http.Request){
 	var requestFile = ""
 	var contentType = "text/html"
 
@@ -55,13 +57,18 @@ func getTimer(w http.ResponseWriter, r *http.Request){
 		case "/timer.js":
 			requestFile = "../frontend/timer.js"
 			contentType = "application/javascript"
-		case "/timer.css":
-			requestFile = "../frontend/timer.css"
-		case "/timerFetch.js":
-			requestFile = "../frontend/timerFetch.js"
+		case "/style.css":
+			requestFile = "../frontend/style.css"
+		case "/common.js":
+			requestFile = "../frontend/common.js"
 			contentType = "application/javascript"
 		case "/timerRun.js":
 			requestFile = "../frontend/timerRun.js"
+			contentType = "application/javascript"
+		case "/edit":
+			requestFile = "../frontend/edit.html"
+		case "/edit.js":
+			requestFile = "../frontend/edit.js"
 			contentType = "application/javascript"
 	}
 
@@ -89,6 +96,7 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 	var datestamp int64
 	if date == "" {
 		datestamp = time.Now().Unix()
+		fmt.Println("Empty Date field.. using today")
 	} else {
 		v, err := strconv.ParseInt(date,10,64)
 		if err != nil {
@@ -96,9 +104,11 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 			datestamp = time.Now().Unix()
 		} else {
 			datestamp = v
+			fmt.Println("Parsed date:",datestamp)
 		}
 	}
 	noonTime := validateDate(datestamp)
+	fmt.Println("Noon:",noonTime)
 
 	db, err := sql.Open("sqlite3","./data/workout.db")
 	if err != nil {

@@ -1,6 +1,8 @@
-export const fetchWorkout = async() => {
+export const fetchWorkout = async(d) => {
 	return new Promise((resolve, reject) => {
-		fetch("/workout.json").then((response) => {
+		const t = Math.floor(d)
+		console.log("Fetching: /workout/",t)
+		fetch("/workout/"+t).then((response) => {
 			if(!response.ok) {
 				reject(`HTTP error: ${response.status}`);
 			} else {
@@ -13,4 +15,9 @@ export const fetchWorkout = async() => {
 			reject(`Fetch error: ${error.message}`)
 		})
 	})
+}
+
+export function formatLength(len){
+	console.log("New Len:",len)
+	return new Date(len * 1000).toISOString().slice(11,19)
 }
