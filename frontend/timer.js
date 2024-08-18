@@ -1,5 +1,5 @@
 import { createApp, ref, onMounted, onUnmounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-import { fetchWorkout } from '/timerFetch.js'
+import { fetchWorkout,formatLength } from '/common.js'
 import { processRoutine } from '/timerRun.js'
 
 
@@ -10,6 +10,7 @@ createApp({
 		const isLoading = ref(true)
 		const startEnabled = ref(true)
 		const statusMessage = ref("")
+
 		window.statusMessage = statusMessage
 		let workoutDataReset = {}
 		let oldMessage = ""
@@ -53,7 +54,7 @@ createApp({
 
 		//export
 		return {
-			message, workoutData, isLoading, start, startEnabled, statusMessage
+			message, workoutData, isLoading, start, startEnabled, statusMessage, formatLength
 		}
 		
 	}

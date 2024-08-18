@@ -2,7 +2,7 @@
 	<head>
 		<title>Workout Timer</title>
 		<script src="timer.js" type="module"></script>
-		<link rel="stylesheet" href="timer.css">
+		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
 		<div id="app">
@@ -32,7 +32,8 @@
 			</ol>
 			<div class="flex-grid">
 				<div class="col">
-					<button v-if="startEnabled" @click="start" :disabled="!startEnabled">Start!</button>
+					<button v-if="startEnabled" @click="start" 
+						:disabled="!startEnabled" class="startBtn">Start!</button>
 					<h1>{{ statusMessage }}</h2>
 				</div>
 			</div>

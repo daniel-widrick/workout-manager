@@ -16,8 +16,9 @@ body {
 li {
 	border: solid 1px;
 }
-button {
+button.startBtn{
 	font-size: 32px;
+	margin-right: 10px;
 }
 .active {
 	background-color: lightgreen;
@@ -33,6 +34,26 @@ h1 {
 	padding-top: 0px;
 	display: inline;
 }
-button {
-	margin-right: 10px;
+#weekday {
+	display: block;
+}
+.dateDisplay {
+	text-align: center;
+}
+.btn {
+	text-align: right;
+	flex-shrink: 1;
+	flex-grow: 0;
+	padding-left: 10px;
+}
+.add {
+	color: darkgreen;
+	background-color: lightgreen;
+}
+.del {
+	color: darkred;
+	background-color: lightpink;
+}
+.addLength {
+	width: 6em;
 }

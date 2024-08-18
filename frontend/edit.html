@@ -1,0 +1,91 @@
+<html>
+	<head>
+		<title>Workout Editor</title>
+		<script src="edit.js" type="module"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="app">
+			<div id="dateSelect">
+				<div class="flex-grid">
+					<div class="col"><button @click="prevDate">&lt;</button></div>
+					<div class="col dateDisplay">
+				<span id="weekday">{{ workoutDate.toLocaleString("en-US",{weekday:"long"}) }}</span>
+				<span id="date">{{ workoutDate.toLocaleString("en-US",{day: "numeric", month: "long", year: "numeric" }) }}</span>
+					</div>
+					<div class="col"><button @click="nextDate">&gt;</button>
+				</div>
+			</div>
+			<div id="list">
+				<ol class="workoutList">
+					<li v-for="set in workoutData">
+						<div class="flex-grid" v-if="set.type != 'interval'">
+							<div class="col">{{set.type}}</div>
+							<div class="col">{{ formatLength(set.length) }}</div>
+							<div class="col btn">
+								<button @click="removeSet(set)" class="del">X</button>
+							</div>
+						</div>
+						<div class="flex-grid" v-if="set.type === 'interval'">
+							<div class="col">Repeat</div>
+							<div class="col length">
+								{{ set.repeat }}
+								time<span v-if="set.repeat != 1">s</span>
+							</div>
+							<div class="col btn">
+								<button @click="removeSet(set)" class="del">x</button>
+							</div>
+						</div>
+						<ol v-if="set.type == 'interval'">
+							<li v-for="intervalSet in set.routine">
+								<div class="flex-grid">
+									<div class="col">{{ intervalSet.type }}</div>
+									<div class="col length">{{ formatLength(intervalSet.length) }}</div>
+									<div class="col btn">
+										<button @click="removeIntervalSet(set,intervalSet)" class="del">
+											x
+										</button>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="flex-grid">
+									<div class="col">
+										<select name="addIntervalSet" v-model="addIntervalType">
+												<option v-for="type in workoutTypes.filter((t) => t !== 'interval')" :value="type">{{ type }}</option>
+										</select>
+									</div>
+									<div class="col">
+										<input type="text" name="addIntervalLength" v-model="addIntervalLength" class="addLength" />
+										<label> seconds</label>
+									</div>
+									<div class="col btn">
+										<button class="add" @click="addIntervalSet(set)">+</button>
+									</div>
+								</div>
+							</li>
+						</ol>
+					</li>
+					<li class="addSet">
+						<div class="flex-grid">
+							<div class="col">
+								<select name="addSetType" v-model="addWorkoutType">
+									<option v-for="type in workoutTypes" :value="type">{{ type }}</option>
+								</select>
+							</div>
+							<div class="col">
+								<input type="text" name="addSetLength"
+									v-model="addWorkoutLength" class="addLength" />
+								<label v-if="addWorkoutType != 'interval'"> seconds</label>
+								<label v-if="addWorkoutType == 'interval'"> times</label>
+							</div>
+							<div class="col btn">
+								<button class="add" @click="addSet">+</button>
+							</div>
+						</div>
+					</li>
+				</ol>
+			</div>
+		</div>
+	</body>
+</html>
