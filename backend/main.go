@@ -159,6 +159,7 @@ func getWorkout(w http.ResponseWriter, r *http.Request){
 }
 
 func putWorkout(w http.ResponseWriter, r *http.Request){
+	fmt.Println("GOT PUT REQUEST!!")
 	var workout Workout
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&workout)

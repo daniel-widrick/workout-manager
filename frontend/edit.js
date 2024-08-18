@@ -1,5 +1,5 @@
 import { createApp, ref} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-import { fetchWorkout,formatLength } from '/common.js'
+import { fetchWorkout,formatLength, putWorkout } from '/common.js'
 
 createApp({
 	setup(){
@@ -24,6 +24,7 @@ createApp({
 		}
 		function removeSet(set) {
 			workoutData.value = workoutData.value.filter((w) => w !== set)
+			updateWorkout()
 		}
 		function addSet() {
 			if( addWorkoutType.value !== 'interval'){
@@ -33,9 +34,11 @@ createApp({
 				const i = { type: 'interval', repeat: addWorkoutLength.value, routine: [] }
 				workoutData.value.push(i)
 			}
+			updateWorkout()
 		}
 		function removeIntervalSet(set,iSet) {
 			set.routine = set.routine.filter((s) => s !== iSet)
+			updateWorkout()
 		}
 
 		const workoutFetch = async() => {
@@ -51,6 +54,15 @@ createApp({
 		}
 		function addIntervalSet(set) {
 			set.routine.push({type: addIntervalType.value, length: addIntervalLength.value})
+			updateWorkout()
+		}
+		function updateWorkout(){
+			const w = {
+				id: 0,
+				date: Math.floor(workoutDate.value / 1000),
+				routine: workoutData.value,
+			}
+			putWorkout(w)
 		}
 
 		workoutFetch()
