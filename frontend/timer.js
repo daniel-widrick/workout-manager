@@ -10,6 +10,8 @@ createApp({
 		const isLoading = ref(true)
 		const startEnabled = ref(true)
 		const statusMessage = ref("")
+		const heartrate = ref("--") //Dirty for mobile
+		const heartRateActive = ref(false)
 
 		window.statusMessage = statusMessage
 		let workoutDataReset = {}
@@ -41,6 +43,33 @@ createApp({
 			}
 		}
 
+		//Connect to heart rate monitor
+		const connectHeartRate = async(event) => {
+			event.stopPropagation()
+			try {
+				const device = await navigator.bluetooth.requestDevice({
+					filters: [{ services: ['heart_rate'] }]
+				})
+				const server = await device.gatt.connect()
+				const service = await server.getPrimaryService('heart_rate')
+				const characteristic = await service.getCharacteristic('heart_rate_measurement')
+				device.addEventListener('gattserverdisconnected', onHeartRateDisconnected);
+				characteristic.startNotifications().then(_ => {
+					characteristic.addEventListener('characteristicvaluechanged', handleHeartRateMeasurement)
+				})
+			} catch(error) {
+				heartrate.value = error
+			}
+		}
+		const onHeartRateDisconnected = () => {
+			heartrate.value = '--'
+			heartRateActive.value = false
+		};
+		const handleHeartRateMeasurement = (e) => {
+			heartRateActive.value = true
+			heartrate.value = "Heart Rate: " + e.target.value.getUint8(1)
+		}
+
 		//Fetch Workout Data
 		workoutFetch()
 
@@ -54,7 +83,8 @@ createApp({
 
 		//export
 		return {
-			message, workoutData, isLoading, start, startEnabled, statusMessage, formatLength
+			message, workoutData, isLoading, start, startEnabled, statusMessage, formatLength,
+			connectHeartRate, heartrate, heartRateActive
 		}
 		
 	}

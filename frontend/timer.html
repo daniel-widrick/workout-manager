@@ -36,7 +36,11 @@
 						:disabled="!startEnabled" class="startBtn">Start!</button>
 					<h1>{{ statusMessage }}</h2>
 				</div>
+				<div class="col" v-if="!heartRateActive">
+					<button @click="connectHeartRate" >&lt;3</button>
+				</div>
 			</div>
+			{{ heartrate }}
 		</div>
 	</body>
 </html>

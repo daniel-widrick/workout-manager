@@ -21,7 +21,7 @@
 					<li v-for="set in workoutData">
 						<div class="flex-grid" v-if="set.type != 'interval'">
 							<div class="col">{{set.type}}</div>
-							<div class="col">{{ formatLength(set.length) }}</div>
+							<div class="col length">{{ formatLength(set.length) }}</div>
 							<div class="col btn">
 								<button @click="removeSet(set)" class="del">X</button>
 							</div>
@@ -55,7 +55,7 @@
 												<option v-for="type in workoutTypes.filter((t) => t !== 'interval')" :value="type">{{ type }}</option>
 										</select>
 									</div>
-									<div class="col">
+									<div class="col length">
 										<input type="text" name="addIntervalLength" v-model="addIntervalLength" class="addLength" />
 										<label> seconds</label>
 									</div>
@@ -73,7 +73,7 @@
 									<option v-for="type in workoutTypes" :value="type">{{ type }}</option>
 								</select>
 							</div>
-							<div class="col">
+							<div class="col length">
 								<input type="text" name="addSetLength"
 									v-model="addWorkoutLength" class="addLength" />
 								<label v-if="addWorkoutType != 'interval'"> seconds</label>
