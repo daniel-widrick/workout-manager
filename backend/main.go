@@ -43,7 +43,8 @@ func main(){
 	mux.HandleFunc("GET /edit",getStatic)
 	mux.HandleFunc("GET /edit.js",getStatic)
 
-	http.ListenAndServe("0.0.0.0:8040", mux)
+	err := http.ListenAndServe("0.0.0.0:8040", mux)
+	fmt.Println("%n",err)
 }
 
 
