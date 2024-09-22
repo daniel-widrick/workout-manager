@@ -21,9 +21,9 @@ async function handleSet(set){
 			if(!window.TimerRun){
 				return
 			}
+			set.length--
 			console.log(`${set.type}: ${set.length} seconds remaining`)
 			window.statusMessage.value = `${set.type} for ${ new Date(set.length * 1000).toISOString().slice(11, 19)}`
-			set.length--
 			if(set.length <= 0) {
 				clearInterval(interval)
 				set.length = currentSet.length
