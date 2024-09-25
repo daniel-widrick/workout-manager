@@ -1,5 +1,7 @@
 body {
 	zoom: 1.75;
+	background-color: #212121;
+	color: #FF6EC7;
 }
 .workoutList {
 	width: 400px;
@@ -16,18 +18,30 @@ body {
 li {
 	border: solid 1px;
 }
+button {
+	background-color: #39FF14;
+	border: 1px black;
+}
 button.startBtn{
 	font-size: 32px;
 	margin-right: 10px;
 }
+input,select {
+	background-color: #39FF14;
+}
+li {
+	list-style: none;
+}
 .active {
-	background-color: lightgreen;
+	background-color: #39FF14;
+	color: #000;
+	list-style: none;
 }
 .done {
-	background-color: #ccc;
+	background-color: #000;
 }
 .intervalActive {
-	background-color: lightyellow;
+	background-color: #003300;
 }
 h1 {
 	margin-top: 0px;
