@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<title>Plate Calculator</title>
+		<script src="plate.js" type="module"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="app">
+			<input v-model="targetWeight" type="text" @change="targetWeightChange" />
+			<div id="barWeight">Bar Weight: {{barWeight}}lbs</div>
+			<div id="platesPerSide">Plates Per Side: {{platesPerSide}}</div>
+		</div>
+	</body>
+</html>
