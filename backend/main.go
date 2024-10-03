@@ -42,6 +42,8 @@ func main(){
 	mux.HandleFunc("GET /timerRun.js",getStatic)
 	mux.HandleFunc("GET /edit",getStatic)
 	mux.HandleFunc("GET /edit.js",getStatic)
+	mux.HandleFunc("GET /plate",getStatic)
+	mux.HandleFunc("GET /plate.js",getStatic)
 
 	err := http.ListenAndServe("0.0.0.0:8040", mux)
 	fmt.Println("%n",err)
@@ -70,6 +72,11 @@ func getStatic(w http.ResponseWriter, r *http.Request){
 			requestFile = "../frontend/edit.html"
 		case "/edit.js":
 			requestFile = "../frontend/edit.js"
+			contentType = "application/javascript"
+		case "/plate":
+			requestFile = "../frontend/plate.html"
+		case "/plate.js":
+			requestFile = "../frontend/plate.js"
 			contentType = "application/javascript"
 	}
 
